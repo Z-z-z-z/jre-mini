@@ -1,0 +1,134 @@
+<project default="mini-jre" basedir=".">
+<!--
+JRE 8 download page:
+https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html
+
+Oprional and required files information:
+https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
+-->
+	
+	<property file="build.properties" />
+	
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="jre.dir" value="${build.dir}/jre" />
+
+	<target name="mini-jre">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+
+		<untar src="${jre.src}" dest="${build.dir}" compression="gzip" />
+
+		<length property="jre.size" mode="all">
+			<fileset dir="${build.dir}" />
+		</length>
+		
+		<path id="jre_name">
+			<dirset dir="${build.dir}">
+				<include name="jre*"/>
+			</dirset>
+		</path>
+		<property name="jname" refid="jre_name" />
+		<move file="${jname}" tofile="${jre.dir}" />
+		
+		<delete dir="${jre.dir}/bin/dtplugin" />
+		<delete dir="${jre.dir}/bin/plugin2" />
+		<delete dir="${jre.dir}/lib/applet" />
+		<delete dir="${jre.dir}/lib/cmm" />
+		<delete dir="${jre.dir}/lib/deploy" />
+		<delete dir="${jre.dir}/lib/jfr" />
+		<delete>
+			<fileset dir="${jre.dir}">
+				<include name="bin/deploy.dll" />
+				<include name="bin/java_crw_demo.dll" />
+				<include name="bin/JavaAccessBridge*.dll" />
+				<include name="bin/javacpl.*" />
+				<include name="bin/javaws.exe" />
+				<include name="bin/JAWTAccessBridge*.dll" />
+				<include name="bin/jucheck.exe" />
+				<include name="bin/keytool.exe" />
+				<include name="bin/kinit.exe" />
+				<include name="bin/klist.exe" />
+				<include name="bin/ktab.exe" />
+				<include name="bin/orbd.exe" />
+				<include name="bin/policytool.exe" />
+				<include name="bin/rmiregistry.exe" />
+				<include name="bin/servertool.exe" />
+				<include name="bin/tnameserv.exe" />
+				<include name="bin/WindowsAccessBridge*.dll" />
+				<include name="bin/wsdetect.dll" />
+				
+				<include name="lib/deploy.jar" />
+				<include name="lib/javaws.jar" />
+				<include name="lib/plugin.jar" />
+				
+				<include name="lib/ext/access-bridge*.jar" />
+				<include name="lib/ext/cldrdata.jar" />
+				<include name="lib/ext/jaccess.jar" />
+				<include name="lib/ext/jfxrt.jar" />
+				<include name="lib/ext/localedata.jar" />
+				<include name="lib/ext/meta-index" />
+				<include name="lib/ext/nashorn.jar" />
+				<include name="lib/ext/zipfs.jar" />
+				
+				<!-- Flight Recorder Files -->
+				<include name="lib/jfr.jar" />
+				<include name="bin/jfr.dll" />
+				
+				<!-- JavaFX -->
+				<include name="bin/decora-sse.dll" />
+				<include name="bin/fxplugins.dll" />
+				<include name="bin/glass.dll" />
+				<include name="bin/glib-lite.dll" />
+				<include name="bin/gstreamer-lite.dll" />
+				<include name="bin/javafx-font.dll" />
+				<include name="bin/javafx_font_t2k.dll" />
+				<include name="bin/javafx-iio.dll" />
+				<include name="bin/jfxmedia.dll" />
+				<include name="bin/jfxwebkit.dll" />
+				<include name="bin/prism_*.dll" />
+				<include name="lib/javafx.properties" />
+				<include name="lib/jfxswt.jar" />
+				<include name="lib/plugin.jar" />
+			</fileset>
+		</delete>
+		
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/charsets.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/jsse.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/resources.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/rt.jar" />
+		</antcall>
+
+		<length property="jre-mini.size" mode="all">
+			<fileset dir="${build.dir}/jre" />
+		</length>
+
+		<echo message="JRE Size:      ${jre.size}" />
+		<echo message="JRE Mini Size: ${jre-mini.size}" />
+
+		<antcall target="copy-results" />
+	</target>
+	
+	<target name="repack-jar" if="repack.jars">
+		<echo message="Repack ${jar.file}" />
+		
+		<basename file="${jar.file}" property="filename"/>
+		<property name="repacked.file" value="${build.dir}/repack/${filename}" />
+		<zip destfile="${repacked.file}">
+			<zipfileset src="${jar.file}"/>
+		</zip>
+		
+		<move file="${repacked.file}" tofile="${jar.file}" overwrite="true" />
+	</target>
+	
+	<target name="copy-results" if="results.path">
+		<delete dir="${results.path}/jre" />
+		<move file="${jre.dir}" tofile="${results.path}/jre" />
+	</target>
+</project>
