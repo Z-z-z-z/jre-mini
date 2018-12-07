@@ -3,5 +3,10 @@ jre.src=<Path to JRE>
 
 # Comment if don't need to compress JRE jars
 repack.jars=true
+
+remove.corba=true
+remove.javafx=true
+#remove.swing=true
+
 # Optionally copy results to this dir
 #results.path=

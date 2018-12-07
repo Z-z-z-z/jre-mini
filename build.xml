@@ -12,6 +12,23 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="jre.dir" value="${build.dir}/jre" />
 
+	<patternset id="excluded.classes">
+		<!-- Corba, RMI -->
+		<exclude name="com/sun/corba/**"	if="remove.corba" />
+		<exclude name="com/sun/org/omg/**"	if="remove.corba" />
+		<exclude name="com/sun/rmi/**"		if="remove.corba" />
+		<exclude name="java/rmi/**"			if="remove.corba" />
+		<exclude name="javax/rmi/**"		if="remove.corba" />
+		<exclude name="org/omg/**"			if="remove.corba" />
+		<exclude name="sun/corba/**"		if="remove.corba" />
+		<exclude name="sun/rmi/**"			if="remove.corba" />
+		<!-- Swing -->
+		<exclude name="com/sun/java/swing/**"		if="remove.swing" />
+		<exclude name="com/sun/swing/**"			if="remove.swing" />
+		<exclude name="javax/swing/**"				if="remove.swing" />
+		<exclude name="sun/swing/**"				if="remove.swing" />
+	</patternset>
+
 	<target name="mini-jre">
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />
@@ -75,20 +92,20 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 				<include name="bin/jfr.dll" />
 				
 				<!-- JavaFX -->
-				<include name="bin/decora-sse.dll" />
-				<include name="bin/fxplugins.dll" />
-				<include name="bin/glass.dll" />
-				<include name="bin/glib-lite.dll" />
-				<include name="bin/gstreamer-lite.dll" />
-				<include name="bin/javafx-font.dll" />
-				<include name="bin/javafx_font_t2k.dll" />
-				<include name="bin/javafx-iio.dll" />
-				<include name="bin/jfxmedia.dll" />
-				<include name="bin/jfxwebkit.dll" />
-				<include name="bin/prism_*.dll" />
-				<include name="lib/javafx.properties" />
-				<include name="lib/jfxswt.jar" />
-				<include name="lib/plugin.jar" />
+				<include name="bin/decora-sse.dll"		if="remove.javafx" />
+				<include name="bin/fxplugins.dll"		if="remove.javafx" />
+				<include name="bin/glass.dll"			if="remove.javafx" />
+				<include name="bin/glib-lite.dll"		if="remove.javafx" />
+				<include name="bin/gstreamer-lite.dll"	if="remove.javafx" />
+				<include name="bin/javafx-font.dll"		if="remove.javafx" />
+				<include name="bin/javafx_font_t2k.dll"	if="remove.javafx" />
+				<include name="bin/javafx-iio.dll"		if="remove.javafx" />
+				<include name="bin/jfxmedia.dll"		if="remove.javafx" />
+				<include name="bin/jfxwebkit.dll"		if="remove.javafx" />
+				<include name="bin/prism_*.dll"			if="remove.javafx" />
+				<include name="lib/javafx.properties"	if="remove.javafx" />
+				<include name="lib/jfxswt.jar"			if="remove.javafx" />
+				<include name="lib/plugin.jar"			if="remove.javafx" />
 			</fileset>
 		</delete>
 		
@@ -101,9 +118,10 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 		<antcall target="repack-jar">
 			<param name="jar.file" value="${jre.dir}/lib/resources.jar" />
 		</antcall>
-		<antcall target="repack-jar">
-			<param name="jar.file" value="${jre.dir}/lib/rt.jar" />
-		</antcall>
+		
+		<antcall target="repack-rtjar-compress" />
+		<antcall target="repack-rtjar-nocompress" />
+		<move file="${build.dir}/repack/rt.jar" tofile="${jre.dir}/lib/rt.jar" overwrite="true" />
 
 		<length property="jre-mini.size" mode="all">
 			<fileset dir="${build.dir}/jre" />
@@ -114,13 +132,29 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 
 		<antcall target="copy-results" />
 	</target>
+
+	<target name="repack-rtjar-compress" if="repack.jars">
+		<zip destfile="${build.dir}/repack/rt.jar" compress="true">
+			<zipfileset src="${jre.dir}/lib/rt.jar">
+				<patternset refid="excluded.classes" />
+			</zipfileset>
+		</zip>
+	</target>
+	
+	<target name="repack-rtjar-nocompress" unless="repack.jars">
+		<zip destfile="${build.dir}/repack/rt.jar" compress="true">
+			<zipfileset src="${jre.dir}/lib/rt.jar">
+				<patternset refid="excluded.classes" />
+			</zipfileset>
+		</zip>
+	</target>
 	
 	<target name="repack-jar" if="repack.jars">
 		<echo message="Repack ${jar.file}" />
 		
 		<basename file="${jar.file}" property="filename"/>
 		<property name="repacked.file" value="${build.dir}/repack/${filename}" />
-		<zip destfile="${repacked.file}">
+		<zip destfile="${repacked.file}" compress="true">
 			<zipfileset src="${jar.file}"/>
 		</zip>
 		
