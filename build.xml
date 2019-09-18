@@ -29,6 +29,403 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 		<exclude name="sun/swing/**"				if="remove.swing" />
 	</patternset>
 
+	<target name="compact1">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+
+		<untar src="${jre.src}" dest="${build.dir}" compression="gzip" />
+
+		<length property="jre.size" mode="all">
+			<fileset dir="${build.dir}" />
+		</length>
+		
+		<path id="jre_name">
+			<dirset dir="${build.dir}">
+				<include name="jre*"/>
+			</dirset>
+		</path>
+		<property name="jname" refid="jre_name" />
+		<move file="${jname}" tofile="${build.dir}/jre1" />
+		
+		<move todir="${jre.dir}">
+			<fileset dir="${build.dir}/jre1">
+				<include name="/*" />
+				
+				<include name="bin/client/*" />
+				<include name="bin/api-ms-win*" />
+				<include name="bin/concrt140.dll" />
+				<include name="bin/j2pkcs11.dll" />
+				<include name="bin/java.dll" />
+				<include name="bin/java.exe" />
+				<include name="bin/javaw.exe" />
+				<include name="bin/jli.dll" />
+				<include name="bin/keytool.exe" />
+				<include name="bin/msvcp140.dll" />
+				<include name="bin/msvcr100.dll" />
+				<include name="bin/net.dll" />
+				<include name="bin/nio.dll" />
+				<include name="bin/sunec.dll" />
+				<include name="bin/vcruntime140.dll" />
+				<include name="bin/verify.dll" />
+				<include name="bin/zip.dll" />
+				
+				<include name="lib/ext/localedata.jar" />
+				<include name="lib/ext/sunec.jar" />
+				<include name="lib/ext/sunjce_provider.jar" />
+				<include name="lib/ext/sunpkcs11.jar" />
+				<include name="lib/i386/jvm.cfg" />
+				<include name="lib/security/*" />
+				<include name="lib/calendars.properties" />
+				<include name="lib/content-types.properties" />
+				<include name="lib/currency.data" />
+				<include name="lib/hijrah-config-umalqura.properties" />
+				<include name="lib/jce.jar" />
+				<include name="lib/jsse.jar" />
+				<include name="lib/logging.properties" />
+				<include name="lib/net.properties" />
+				<include name="lib/resources.jar" />
+				<include name="lib/tzdb.dat" />
+				<include name="lib/tzmappings" />
+			</fileset>
+		</move>
+		
+		<property name="repack.jars" value="true" />
+
+		<zip destfile="${jre.dir}/lib/rt.jar" compress="true">
+			<zipfileset src="${build.dir}/jre1/lib/rt.jar">
+				<patternset>
+					<include name="META-INF/**" />
+					<include name="com/sun/demo/**" />
+					<include name="com/sun/java/util/jar/pack/**" />
+					<include name="com/sun/net/**" />
+					<include name="com/sun/nio/**" />
+					<include name="com/sun/security/**" />
+					<include name="java/**" />
+					<include name="javax/net/**" />
+					<include name="javax/script/**" />
+					<include name="javax/security/**" />
+					<include name="jdk/**" />
+					<include name="sun/**" />
+				</patternset>
+			</zipfileset>
+		</zip>
+
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/jsse.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/resources.jar" />
+		</antcall>
+
+		<delete dir="${build.dir}/jre1" />
+
+		<length property="jre-mini.size" mode="all">
+			<fileset dir="${jre.dir}" />
+		</length>
+		
+		<echo message="JRE Size:      ${jre.size}" />
+		<echo message="JRE Mini Size: ${jre-mini.size}" />
+
+	</target>
+	
+	<target name="compact2">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+
+		<untar src="${jre.src}" dest="${build.dir}" compression="gzip" />
+
+		<length property="jre.size" mode="all">
+			<fileset dir="${build.dir}" />
+		</length>
+		
+		<path id="jre_name">
+			<dirset dir="${build.dir}">
+				<include name="jre*"/>
+			</dirset>
+		</path>
+		<property name="jname" refid="jre_name" />
+		<move file="${jname}" tofile="${build.dir}/jre1" />
+		
+		<move todir="${jre.dir}">
+			<fileset dir="${build.dir}/jre1">
+				<include name="/*" />
+				
+				<include name="bin/client/*" />
+				<include name="bin/api-ms-win*" />
+				<include name="bin/concrt140.dll" />
+				<include name="bin/j2pcsc.dll" />
+				<include name="bin/j2pkcs11.dll" />
+				<include name="bin/java.dll" />
+				<include name="bin/java.exe" />
+				<include name="bin/javaw.exe" />
+				<include name="bin/jli.dll" />
+				<include name="bin/keytool.exe" />
+				<include name="bin/msvcp140.dll" />
+				<include name="bin/msvcr100.dll" />
+				<include name="bin/net.dll" />
+				<include name="bin/nio.dll" />
+				<include name="bin/rmid.exe" />
+				<include name="bin/rmiregistry.exe" />
+				<include name="bin/sunec.dll" />
+				<include name="bin/vcruntime140.dll" />
+				<include name="bin/verify.dll" />
+				<include name="bin/zip.dll" />
+				
+				<include name="lib/ext/localedata.jar" />
+				<include name="lib/ext/sunec.jar" />
+				<include name="lib/ext/sunjce_provider.jar" />
+				<include name="lib/ext/sunpkcs11.jar" />
+				<include name="lib/i386/jvm.cfg" />
+				<include name="lib/security/*" />
+				<include name="lib/calendars.properties" />
+				<include name="lib/content-types.properties" />
+				<include name="lib/currency.data" />
+				<include name="lib/hijrah-config-umalqura.properties" />
+				<include name="lib/jce.jar" />
+				<include name="lib/jsse.jar" />
+				<include name="lib/logging.properties" />
+				<include name="lib/net.properties" />
+				<include name="lib/resources.jar" />
+				<include name="lib/tzdb.dat" />
+				<include name="lib/tzmappings" />
+			</fileset>
+		</move>
+		
+		<property name="repack.jars" value="true" />
+
+		<zip destfile="${jre.dir}/lib/rt.jar" compress="true">
+			<zipfileset src="${build.dir}/jre1/lib/rt.jar">
+				<patternset>
+					<include name="META-INF/**" />
+					<include name="com/sun/demo/**" />
+					<include name="com/sun/java/util/jar/pack/**" />
+					<include name="com/sun/java_cup/**" />
+					<include name="com/sun/net/**" />
+					<include name="com/sun/nio/**" />
+					<include name="com/sun/org/**" />
+					<include name="com/sun/rmi/**" />
+					<include name="com/sun/security/**" />
+					<include name="com/sun/xml/**" />
+					<include name="java/io/**" />
+					<include name="java/lang/**" />
+					<include name="java/math/**" />
+					<include name="java/net/**" />
+					<include name="java/nio/**" />
+					<include name="java/rmi/**" />
+					<include name="java/security/**" />
+					<include name="java/sql/**" />
+					<include name="java/text/**" />
+					<include name="java/time/**" />
+					<include name="java/util/**" />
+					<include name="javax/net/**" />
+					<include name="javax/rmi/**" />
+					<include name="javax/script/**" />
+					<include name="javax/security/**" />
+					<include name="javax/sql/**" />
+					<include name="javax/transaction/**" />
+					<include name="javax/xml/**" />
+					<include name="jdk/**" />
+					<include name="org/w3c/**" />
+					<include name="org/xml/**" />
+					<include name="sun/invoke/**" />
+					<include name="sun/io/**" />
+					<include name="sun/launcher/**" />
+					<include name="sun/misc/**" />
+					<include name="sun/net/**" />
+					<include name="sun/nio/**" />
+					<include name="sun/reflect/**" />
+					<include name="sun/rmi/**" />
+					<include name="sun/security/**" />
+					<include name="sun/text/**" />
+					<include name="sun/usagetracker/**" />
+					<include name="sun/util/**" />
+				</patternset>
+			</zipfileset>
+		</zip>
+
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/jsse.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/resources.jar" />
+		</antcall>
+
+		<delete dir="${build.dir}/jre1" />
+
+		<length property="jre-mini.size" mode="all">
+			<fileset dir="${jre.dir}" />
+		</length>
+		
+		<echo message="JRE Size:      ${jre.size}" />
+		<echo message="JRE Mini Size: ${jre-mini.size}" />
+
+	</target>
+	
+	<target name="compact3">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+
+		<untar src="${jre.src}" dest="${build.dir}" compression="gzip" />
+
+		<length property="jre.size" mode="all">
+			<fileset dir="${build.dir}" />
+		</length>
+		
+		<path id="jre_name">
+			<dirset dir="${build.dir}">
+				<include name="jre*"/>
+			</dirset>
+		</path>
+		<property name="jname" refid="jre_name" />
+		<move file="${jname}" tofile="${build.dir}/jre1" />
+		
+		<move todir="${jre.dir}">
+			<fileset dir="${build.dir}/jre1">
+				<include name="/*" />
+				
+				<include name="bin/client/*" />
+				
+				<include name="bin/api-ms-win*" />
+				<include name="bin/concrt140.dll" />
+				<include name="bin/hprof.dll" />
+				<include name="bin/instrument.dll" />
+				<include name="bin/j2pcsc.dll" />
+				<include name="bin/j2pkcs11.dll" />
+				<include name="bin/jaas_nt.dll" />
+				<include name="bin/java.dll" />
+				<include name="bin/java.exe" />
+				<include name="bin/java.exe" />
+				<include name="bin/java_crw_demo.dll" />
+				<include name="bin/javaw.exe" />
+				<include name="bin/jli.dll" />
+				<include name="bin/jsdt.dll" />
+				<include name="bin/keytool.exe" />
+				<include name="bin/management.dll" />
+				<include name="bin/msvcp140.dll" />
+				<include name="bin/msvcr100.dll" />
+				<include name="bin/net.dll" />
+				<include name="bin/nio.dll" />
+				<include name="bin/npt.dll" />
+				<include name="bin/rmid.exe" />
+				<include name="bin/rmiregistry.exe" />
+				<include name="bin/sunec.dll" />
+				<include name="bin/vcruntime140.dll" />
+				<include name="bin/verify.dll" />
+				<include name="bin/zip.dll" />
+				
+				<include name="lib/management/*" />
+				
+				<include name="lib/security/*" />
+
+				<include name="lib/ext/localedata.jar" />
+				<include name="lib/ext/sunec.jar" />
+				<include name="lib/ext/sunjce_provider.jar" />
+				<include name="lib/ext/sunpkcs11.jar" />
+				
+				<include name="lib/i386/jvm.cfg" />
+				
+				<include name="lib/calendars.properties" />
+				<include name="lib/content-types.properties" />
+				<include name="lib/currency.data" />
+				<include name="lib/hijrah-config-umalqura.properties" />
+				<include name="lib/jce.jar" />
+				<include name="lib/jsse.jar" />
+				<include name="lib/logging.properties" />
+				<include name="lib/management-agent.jar" />
+				<include name="lib/net.properties" />
+				<include name="lib/resources.jar" />
+				<include name="lib/tzdb.dat" />
+				<include name="lib/tzmappings" />
+			</fileset>
+		</move>
+		
+		<property name="repack.jars" value="true" />
+
+		<zip destfile="${jre.dir}/lib/rt.jar" compress="true">
+			<zipfileset src="${build.dir}/jre1/lib/rt.jar">
+				<patternset>
+					<include name="META-INF/**" />
+					<include name="com/sun/demo/**" />
+					<include name="com/sun/java/util/jar/pack/**" />
+					<include name="com/sun/java_cup/**" />
+					<include name="com/sun/jmx/**" />
+					<include name="com/sun/jndi/**" />
+					<include name="com/sun/management/**" />
+					<include name="com/sun/naming/**" />
+					<include name="com/sun/net/**" />
+					<include name="com/sun/nio/**" />
+					<include name="com/sun/org/apache/**" />
+					<include name="com/sun/rmi/**" />
+					<include name="com/sun/rowset/**" />
+					<include name="com/sun/security/**" />
+					<include name="com/sun/tracing/**" />
+					<include name="com/sun/xml/**" />
+					<include name="java/io/**" />
+					<include name="java/lang/**" />
+					<include name="java/math/**" />
+					<include name="java/net/**" />
+					<include name="java/nio/**" />
+					<include name="java/rmi/**" />
+					<include name="java/security/**" />
+					<include name="java/sql/**" />
+					<include name="java/text/**" />
+					<include name="java/time/**" />
+					<include name="java/util/**" />
+					<include name="javax/annotation/**" />
+					<include name="javax/lang/**" />
+					<include name="javax/management/**" />
+					<include name="javax/naming/**" />
+					<include name="javax/net/**" />
+					<include name="javax/rmi/**" />
+					<include name="javax/script/**" />
+					<include name="javax/security/**" />
+					<include name="javax/smartcardio/**" />
+					<include name="javax/sql/**" />
+					<include name="javax/tools/**" />
+					<include name="javax/transaction/**" />
+					<include name="javax/xml/**" />
+					<include name="jdk/**" />
+					<include name="org/ietf/**" />
+					<include name="org/jcp/**" />
+					<include name="org/w3c/**" />
+					<include name="org/xml/**" />
+					<include name="sun/invoke/**" />
+					<include name="sun/io/**" />
+					<include name="sun/instrument/**" />
+					<include name="sun/invoke/**" />
+					<include name="sun/launcher/**" />
+					<include name="sun/management/**" />
+					<include name="sun/misc/**" />
+					<include name="sun/net/**" />
+					<include name="sun/nio/**" />
+					<include name="sun/reflect/**" />
+					<include name="sun/rmi/**" />
+					<include name="sun/security/**" />
+					<include name="sun/text/**" />
+					<include name="sun/usagetracker/**" />
+					<include name="sun/util/**" />
+				</patternset>
+			</zipfileset>
+		</zip>
+
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/jsse.jar" />
+		</antcall>
+		<antcall target="repack-jar">
+			<param name="jar.file" value="${jre.dir}/lib/resources.jar" />
+		</antcall>
+
+		<delete dir="${build.dir}/jre1" />
+
+		<length property="jre-mini.size" mode="all">
+			<fileset dir="${jre.dir}" />
+		</length>
+		
+		<echo message="JRE Size:      ${jre.size}" />
+		<echo message="JRE Mini Size: ${jre-mini.size}" />
+
+	</target>
+		
 	<target name="mini-jre">
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />
@@ -121,7 +518,6 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 		
 		<antcall target="repack-rtjar-compress" />
 		<antcall target="repack-rtjar-nocompress" />
-		<move file="${build.dir}/repack/rt.jar" tofile="${jre.dir}/lib/rt.jar" overwrite="true" />
 
 		<length property="jre-mini.size" mode="all">
 			<fileset dir="${build.dir}/jre" />
@@ -139,6 +535,7 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 				<patternset refid="excluded.classes" />
 			</zipfileset>
 		</zip>
+		<move file="${build.dir}/repack/rt.jar" tofile="${jre.dir}/lib/rt.jar" overwrite="true" />
 	</target>
 	
 	<target name="repack-rtjar-nocompress" unless="repack.jars">
@@ -147,6 +544,7 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 				<patternset refid="excluded.classes" />
 			</zipfileset>
 		</zip>
+		<move file="${build.dir}/repack/rt.jar" tofile="${jre.dir}/lib/rt.jar" overwrite="true" />
 	</target>
 	
 	<target name="repack-jar" if="repack.jars">
@@ -165,4 +563,5 @@ https://www.oracle.com/technetwork/java/javase/jre-8-readme-2095710.html
 		<delete dir="${results.path}/jre" />
 		<move file="${jre.dir}" tofile="${results.path}/jre" />
 	</target>
+	
 </project>
